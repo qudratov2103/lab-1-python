@@ -1,47 +1,83 @@
 from .constants import VALS
+import math
 
 class ReversePolishMachine:
 
     def __init__(self):
-        self.storage = []
+        self.stack = []
 
-    def _is_it_numeric(self, value: str) -> bool:
+    def _is_number(self, text: str) -> bool:
+        """
+        число это или нет хммм
+        """
         try:
-            float(value)
+            float(text)
             return True
         except ValueError:
             return False
-        
-    def _complete_operation(self, operation: str):
-        if len(self.storage) < 2:
-            raise ValueError("Pohodu pochemuto Not enough data has given (hah) try once more")
 
-        # KEEP ORDER!!!
-        second_val = self.storage.pop()
-        first_val = self.storage.pop()
+    def _do_operation(self, operation: str):
+        """
+        одна операция
+        """
+        if operation in ['u+', 'u-']:
+            if len(self.stack) < 1:
+                raise ValueError("Мало чисел для операции!")
 
-        try:
-            result_of_execution = VALS[operation](first_val, second_val)
-            self.storage.append(result_of_execution)
-
-        except ZeroDivisionError: # there is nothing impossible (ahah)
-            raise ValueError("Pohodu you trying to divide by zeroooo")
-
-    def calculate(self, expression_string: str) -> float:
-        self.storage = []
-        elements = expression_string.split()
-
-        for value_operation in elements:
-            if value_operation in ['(', ')']:
-                continue
-            elif self._is_it_numeric(value_operation):
-                self.storage.append(float(value_operation))
-            elif value_operation in VALS:
-                self._complete_operation(value_operation)
+            number = self.stack.pop()
+            if operation == 'u+':
+                self.stack.append(+number)
             else:
-                raise ValueError(f"Pohodu kakoyto Unknown element (hah) try once more)")
+                self.stack.append(-number)
 
-        if len(self.storage) != 1:
-            raise ValueError("Pohodu u tebya Incorrect Sequence (hah) try once more")
 
-        return self.storage[0]
+        else:
+            if len(self.stack) < 2:
+                raise ValueError("Нужно два числа для операции!")
+            # порядооок
+            second = self.stack.pop()
+            first = self.stack.pop()
+
+            try:
+                if operation in ['//', '%']:
+                    # проверочкааа
+                    if not (isinstance(first, int) or first.is_integer()):
+                        raise ValueError("Для операции // левое число должно быть целым")
+                    if not (isinstance(second, int) or second.is_integer()):
+                        raise ValueError("Для операции // правое число должно быть целым")
+
+                    first = int(first)
+                    second = int(second)
+
+                result = VALS[operation](first, second)
+                self.stack.append(result)
+
+            except ZeroDivisionError:
+                raise ValueError("Нельзя делить на ноль!")
+            except ValueError as e:
+                raise e
+            except Exception as e:
+                raise ValueError(f"Ошибка при вычислении: {e}")
+
+    def calculate(self, expression: str) -> float:
+        """
+        вычислениее
+        """
+        self.stack = []
+
+        tokens = expression.split()
+
+        for token in tokens:
+            if token in ['(', ')']:
+                continue
+            elif self._is_number(token):
+                self.stack.append(float(token))
+            elif token in VALS:
+                self._do_operation(token)
+            else:
+                raise ValueError(f"Неизвестный символ: '{token}'")
+
+        if len(self.stack) != 1:
+            raise ValueError("Неправильная последовательность операций!")
+
+        return self.stack[0]

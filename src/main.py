@@ -1,39 +1,39 @@
-from src.rpn_enigne import ReversePolishMachine
-
+from src.rpn_engine import ReversePolishMachine
 
 def main() -> None:
     """
-    Обязательнная составляющая программ, которые сдаются. Является точкой входа в приложение
-    :return: Данная функция ничего не возвращает
+    типа точка входа
     """
 
-    instanceofRPN = ReversePolishMachine()
+    calc = ReversePolishMachine()
 
-    print("Калькулятор Обратной Польской Нотации")
-    print("Можно вводить выражения со скобками:")
-    print("( 3 4 + ) ( 5 2 - ) *")
-    print("( 8 ( 3 2 + ) - ) 4 *") 
-    print("\nДля выхода введите 'закончить' или ctrl + c (-_-)")
+    print("Можно вводить выражения со скобками вот так:")
+    print("( 3 4 + )")
+    print("( 3 4 + ) ( 5 2 - ) *") #пример Самира
+    print("( 8 ( 3 2 + ) - ) 4 *") #пример Самира
+    print("Если надоело - пиши 'закончить' или жми ctrl+c")
 
     while True:
         try:
-            expression_input = input("\nВведите выражение: ").strip()
+            user_input = input("\nВведи выражение: ").strip()
 
-            if expression_input.lower() in ["Закончить"]:
+            if user_input.lower() in ["закончить"]:
+                print("Пока!")
                 break
 
-            if not expression_input:
+            if user_input == "":
                 continue
 
-            final_result = instanceofRPN.calculate(expression_input)
-            print(f"Результат: {final_result}")
-            # print(SAMPLE_CONSTANT)
+            result = calc.calculate(user_input)
+            print(f"Получилось: {result}")
 
         except ValueError as e:
-            print(f"Ошибка: {e}")
+            print(f"Ой, ошибка: {e}")
         except KeyboardInterrupt:
-            print("\nПрограмма завершена")
+            print("\nНу ладно, пока!")
             break
-        
+        except Exception as e:
+            print(f"Что-то пошло не так: {e}")
+
 if __name__ == "__main__":
     main()
