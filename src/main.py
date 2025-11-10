@@ -1,5 +1,4 @@
-from src.power import power_function
-from src.constants import SAMPLE_CONSTANT
+from src.rpn_enigne import ReversePolishMachine
 
 
 def main() -> None:
@@ -8,13 +7,33 @@ def main() -> None:
     :return: Данная функция ничего не возвращает
     """
 
-    target, degree = map(int, input("Введите два числа разделенные пробелом: ").split(" "))
+    instanceofRPN = ReversePolishMachine()
 
-    result = power_function(target=target, power=degree)
+    print("Калькулятор Обратной Польской Нотации")
+    print("Можно вводить выражения со скобками:")
+    print("( 3 4 + ) ( 5 2 - ) *")
+    print("( 8 ( 3 2 + ) - ) 4 *") 
+    print("\nДля выхода введите 'закончить' или ctrl + c (-_-)")
 
-    print(result)
+    while True:
+        try:
+            expression_input = input("\nВведите выражение: ").strip()
 
-    print(SAMPLE_CONSTANT)
+            if expression_input.lower() in ["Закончить"]:
+                break
 
+            if not expression_input:
+                continue
+
+            final_result = instanceofRPN.calculate(expression_input)
+            print(f"Результат: {final_result}")
+            # print(SAMPLE_CONSTANT)
+
+        except ValueError as e:
+            print(f"Ошибка: {e}")
+        except KeyboardInterrupt:
+            print("\nПрограмма завершена")
+            break
+        
 if __name__ == "__main__":
     main()
